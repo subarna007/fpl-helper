@@ -9,15 +9,13 @@ import { useDashboard } from "./_state/DashboardContext";
 export default function Page() {
   const { entry, setEntry, data, loading, error, load, reset } = useDashboard();
 
-  // -----------------------------
   // ENTRY SCREEN
-  // -----------------------------
   if (!data) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <Card className="w-full max-w-md">
           <div className="p-6">
-            <div className="text-xl font-semibold text-center">
+            <div className="text-xl font-semibold text-center text-gray-900">
               FPL Analytics
             </div>
             <div className="mt-2 text-sm text-gray-600 text-center">
@@ -25,21 +23,26 @@ export default function Page() {
             </div>
 
             <div className="mt-6">
-              <label className="block text-xs font-medium text-gray-600">
+              <label className="block text-xs font-medium text-gray-700">
                 FPL Entry ID
               </label>
+
               <input
                 value={entry}
                 onChange={(e) => setEntry(e.target.value)}
                 placeholder="e.g. 28935"
-                className="mt-2 w-full rounded-xl border px-4 py-3 text-sm outline-none focus:ring"
+                inputMode="numeric"
+                className="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm
+                           text-gray-900 placeholder:text-gray-400
+                           outline-none focus:ring-2 focus:ring-black/20"
               />
             </div>
 
             <button
               onClick={() => load()}
               disabled={!entry.trim() || loading}
-              className="mt-4 w-full rounded-xl bg-black py-3 text-sm font-semibold text-white disabled:opacity-50"
+              className="mt-4 w-full rounded-xl bg-black py-3 text-sm font-semibold text-white
+                         disabled:opacity-50"
             >
               {loading ? "Analyzing…" : "Analyze Team"}
             </button>
@@ -59,9 +62,7 @@ export default function Page() {
     );
   }
 
-  // -----------------------------
   // DASHBOARD
-  // -----------------------------
   return (
     <AppShell
       title="Squad Overview"
@@ -69,7 +70,7 @@ export default function Page() {
       right={
         <button
           onClick={reset}
-          className="rounded-full border px-3 py-1 text-xs font-semibold"
+          className="rounded-full border border-gray-300 bg-white px-3 py-1 text-xs font-semibold text-gray-900 hover:bg-gray-50"
         >
           Change Entry
         </button>
@@ -89,30 +90,32 @@ export default function Page() {
 
           <Card>
             <div className="p-5">
-              <div className="text-sm font-semibold">Squad Summary</div>
+              <div className="text-sm font-semibold text-gray-900">Squad Summary</div>
               <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-                <div className="rounded-xl border p-3">
+                <div className="rounded-xl border border-gray-200 bg-white p-3">
                   <div className="text-xs text-gray-500">Team Value</div>
-                  <div className="font-semibold">
-                    £{(data.meta.teamValue / 10).toFixed(1)}m
+                  <div className="font-semibold text-gray-900">
+                    £{(Number(data.meta?.teamValue ?? 0) / 10).toFixed(1)}m
                   </div>
                 </div>
-                <div className="rounded-xl border p-3">
+                <div className="rounded-xl border border-gray-200 bg-white p-3">
                   <div className="text-xs text-gray-500">Bank</div>
-                  <div className="font-semibold">
-                    £{(data.meta.bank / 10).toFixed(1)}m
+                  <div className="font-semibold text-gray-900">
+                    £{(Number(data.meta?.bank ?? 0) / 10).toFixed(1)}m
                   </div>
                 </div>
-                <div className="rounded-xl border p-3">
+                <div className="rounded-xl border border-gray-200 bg-white p-3">
                   <div className="text-xs text-gray-500">Transfers</div>
-                  <div className="font-semibold">
-                    {data.meta.transfersAvailable}
+                  <div className="font-semibold text-gray-900">
+                    {data.meta?.transfersAvailable ?? 1}
                   </div>
                 </div>
-                <div className="rounded-xl border p-3">
+                <div className="rounded-xl border border-gray-200 bg-white p-3">
                   <div className="text-xs text-gray-500">Overall Rank</div>
-                  <div className="font-semibold">
-                    {data.meta.overallRank?.toLocaleString() ?? "—"}
+                  <div className="font-semibold text-gray-900">
+                    {data.meta?.overallRank
+                      ? Number(data.meta.overallRank).toLocaleString()
+                      : "—"}
                   </div>
                 </div>
               </div>
@@ -120,10 +123,7 @@ export default function Page() {
           </Card>
         </div>
 
-        <Widgets
-          currentEvent={data.currentEvent}
-          captaincy={data.captaincy ?? []}
-        />
+        <Widgets currentEvent={data.currentEvent} captaincy={data.captaincy ?? []} />
       </div>
     </AppShell>
   );
