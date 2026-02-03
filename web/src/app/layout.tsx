@@ -1,5 +1,9 @@
 import "./globals.css";
-import { DashboardProvider } from "./_state/DashboardContext";
+
+export const metadata = {
+  title: "FPL Helper",
+  description: "Unofficial FPL helper app",
+};
 
 export default function RootLayout({
   children,
@@ -8,9 +12,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <DashboardProvider>{children}</DashboardProvider>
-      </body>
+      <body className="bg-gray-50 text-gray-900">{children}</body>
     </html>
   );
 }
