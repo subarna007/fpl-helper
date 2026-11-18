@@ -7,7 +7,7 @@ const tabs = [
   { href: "/", label: "Dashboard" },
   { href: "/plan", label: "Planner" },
   { href: "/transfers", label: "Transfers" },
-  { href: "/ai-team", label: "AI Teams" },
+  { href: "/best-squad", label: "Best squad" },
   { href: "/players", label: "Players" },
 ];
 

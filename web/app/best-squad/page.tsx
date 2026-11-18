@@ -25,7 +25,7 @@ function PlayerCard({ p }: { p: any }) {
   );
 }
 
-export default function AITeamPage() {
+export default function BestSquadPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [horizon, setHorizon] = useState<1 | 3 | 5>(5);
@@ -33,7 +33,7 @@ export default function AITeamPage() {
   async function load() {
     setLoading(true);
     try {
-      const r = await fetch(`/api/ai-team?horizon=${horizon}`);
+      const r = await fetch(`/api/best-squad?horizon=${horizon}`);
       const j = await r.json();
       setData(j);
     } finally {
@@ -47,7 +47,7 @@ export default function AITeamPage() {
 
   return (
     <AppShell
-      title="AI Team"
+      title="Best squad"
       subtitle={`Best squad optimized for next ${horizon} GWs`}
       right={
         <div className="flex gap-2">

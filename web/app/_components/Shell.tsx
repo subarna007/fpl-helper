@@ -7,7 +7,7 @@ const tabs = [
   { href: "/", label: "Home" },
   { href: "/plan", label: "Planner" },
   { href: "/transfers", label: "Transfers" },
-  { href: "/ai-team", label: "AI Team" },
+  { href: "/best-squad", label: "Best squad" },
 ];
 
 export default function Shell({

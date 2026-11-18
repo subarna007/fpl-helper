@@ -13,11 +13,10 @@ export default function PlayersPage() {
   useEffect(() => {
     (async () => {
       try {
-        const r = await fetch("https://fantasy.premierleague.com/api/bootstrap-static/", {
-          cache: "no-store",
-        });
+        // the browser cannot call the FPL API directly (CORS), so go through our own route
+        const r = await fetch("/api/fpl/core", { cache: "no-store" });
         const j = await r.json();
-        setBootstrap(j);
+        setBootstrap(j.bootstrap ?? null);
       } finally {
         setLoading(false);
       }

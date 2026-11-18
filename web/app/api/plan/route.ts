@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
+import { FPL_HEADERS, getPicks } from "../_lib/picks";
 
 const FPL = "https://fantasy.premierleague.com/api";
 
 async function fetchJson(path: string) {
-  const r = await fetch(`${FPL}${path}`, { cache: "no-store" });
+  const r = await fetch(`${FPL}${path}`, { cache: "no-store", headers: FPL_HEADERS });
   if (!r.ok) throw new Error(`FPL request failed: ${r.status}`);
   return r.json();
 }
@@ -220,7 +221,7 @@ export async function GET(req: Request) {
     bootstrap.events.find((e: any) => e.is_next)?.id ??
     1;
 
-  const picksResp = await fetchJson(`/entry/${entry}/event/${currentEvent}/picks/`);
+  const picksResp = await getPicks(String(entry), Number(currentEvent), fetchJson);
   const picks = picksResp.picks as any[];
 
   const teamsById = new Map<number, any>();

@@ -26,7 +26,7 @@ It helps FPL managers analyze their squad, fixtures, and player performance usin
 - 📊 **Analytics widgets**
   - Quick insights for the current gameweek
 - 🧠 **Expandable architecture**
-  - Built to support AI transfers, captaincy, and optimal team selection
+  - Built to support transfer, captaincy and team-selection decisions
 
 ---
 
@@ -66,6 +66,11 @@ app/
  └─ page.tsx
 
 ---
+
+## 🌐 Live site
+
+Deployed on Vercel (see the link on [my website](https://subarna007.github.io/personalwebsite/#fpl)).
+To deploy your own copy: import this repository on [vercel.com](https://vercel.com), set **Root Directory** to `web`, and deploy. No environment variables are needed.
 
 ## ▶️ Run locally
 

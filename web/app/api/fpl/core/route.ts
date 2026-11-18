@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
+import { FPL_HEADERS } from "../../_lib/picks";
 
 const FPL_BASE = "https://fantasy.premierleague.com/api";
 
 async function fetchJson(path: string) {
-  const res = await fetch(`${FPL_BASE}${path}`, { cache: "no-store" });
+  const res = await fetch(`${FPL_BASE}${path}`, { cache: "no-store", headers: FPL_HEADERS });
   if (!res.ok) throw new Error(`FPL request failed: ${res.status}`);
   return res.json();
 }

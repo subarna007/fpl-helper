@@ -42,6 +42,9 @@ export function mapFplTeamToFootballData(fplTeamName: string) {
   const map: Record<string, string> = {
     "manchester city": "man city",
     "manchester united": "man united",
+    "man utd": "man united",
+    "spurs": "tottenham",
+    "nottm forest": "nottm forest",
     "newcastle united": "newcastle",
     "nottingham forest": "nottm forest",
     "tottenham hotspur": "tottenham",

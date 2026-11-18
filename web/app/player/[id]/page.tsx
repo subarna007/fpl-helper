@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FPL_HEADERS } from "../../api/_lib/picks";
 
 function posName(t: number) {
   if (t === 1) return "Goalkeeper";
@@ -38,7 +39,7 @@ function nextNFixtures(fixtures: any[], teamId: number, startEvent: number, n: n
 }
 
 async function fetchFpl(path: string) {
-  const r = await fetch(`https://fantasy.premierleague.com/api${path}`, { cache: "no-store" });
+  const r = await fetch(`https://fantasy.premierleague.com/api${path}`, { cache: "no-store", headers: FPL_HEADERS });
   if (!r.ok) throw new Error(`FPL request failed: ${r.status}`);
   return r.json();
 }
