@@ -7,7 +7,6 @@ It helps FPL managers analyze their squad, fixtures, and player performance usin
 
 ## 📸 Screenshot
 
-> Add a screenshot of the dashboard UI here.
 
 ![FPL Dashboard Screenshot](1.png)
 ![FPL Dashboard Screenshot](2.png)
@@ -65,3 +64,26 @@ app/
  ├─ _state/           # Global dashboard context
  ├─ layout.tsx
  └─ page.tsx
+
+---
+
+## ▶️ Run locally
+
+Requires Node.js 20 or newer.
+
+```bash
+cd web
+npm install
+npm run dev      # http://localhost:3000
+```
+
+No API key is needed: the app's own API routes call the public FPL API
+(`https://fantasy.premierleague.com/api`) on the server, which avoids browser CORS errors.
+
+## 📐 About the xPoints numbers
+
+The expected-points figures are a hand-made heuristic, not a trained model. A player's FPL
+form and expected goal involvements are combined, then scaled by fixture difficulty, position,
+minutes played and availability (injury or doubt flags); see `web/app/api/_lib/projection.ts`.
+The recommendations route also uses bookmaker match odds from football-data.co.uk (`odds.ts`).
+Treat the numbers as a ranking aid.
