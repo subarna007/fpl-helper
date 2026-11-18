@@ -1,26 +1,92 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-barlow), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--font-barlow-condensed), var(--font-barlow), system-ui, sans-serif;
+
+  --color-ink: #0E1A2B;
+  --color-ink-2: #51606F;
+  --color-paper: #F3F5F2;
+  --color-line: #DFE4DD;
+  --color-pitch: #127A45;
+  --color-pitch-dark: #0C5C33;
+  --color-turf: #E5F2EA;
+  --color-gold: #E8A300;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* numbers line up in tables and stat tiles */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* the dark app bar has a faint pitch-stripe texture */
+.stripes {
+  background-color: var(--color-ink);
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.025) 0 48px,
+    transparent 48px 96px
+  );
+}
+
+/* page content fades in when you change page */
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.page-in {
+  animation: page-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+.skeleton {
+  border-radius: 1rem;
+  background: linear-gradient(90deg, #e9ece8 25%, #f5f7f4 50%, #e9ece8 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-pitch);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Tailwind 4 draws plain `border` in currentColor; keep borders light unless a colour is given */
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-line);
+  }
 }

@@ -3,27 +3,8 @@
 import { useEffect, useState } from "react";
 import AppShell from "../_components/AppShell";
 import Card from "../_components/Card";
-
-function Pos({ n }: { n: number }) {
-  return (
-    <span className="rounded-full border px-2 py-0.5 text-[11px] font-semibold">
-      {n === 1 ? "GK" : n === 2 ? "DEF" : n === 3 ? "MID" : "FWD"}
-    </span>
-  );
-}
-
-function PlayerCard({ p }: { p: any }) {
-  return (
-    <div className="rounded-xl border bg-white p-3 text-sm">
-      <div className="font-semibold">{p.name}</div>
-      <div className="mt-1 flex items-center gap-2 text-xs text-gray-600">
-        <Pos n={p.pos} />
-        <span>{p.teamShort ?? ""}</span>
-        <span>£{(p.price / 10).toFixed(1)}m</span>
-      </div>
-    </div>
-  );
-}
+import Segmented from "../_components/Segmented";
+import Pitch from "../_components/Pitch";
 
 export default function BestSquadPage() {
   const [data, setData] = useState<any>(null);
@@ -48,72 +29,60 @@ export default function BestSquadPage() {
   return (
     <AppShell
       title="Best squad"
-      subtitle={`Best squad optimized for next ${horizon} GWs`}
+      subtitle="If you could start again with £100m, this is the squad the model would pick."
       right={
-        <div className="flex gap-2">
-          {[1, 3, 5].map((h) => (
-            <button
-              key={h}
-              onClick={() => setHorizon(h as any)}
-              className={`rounded-full px-3 py-1 text-xs font-semibold border ${
-                horizon === h ? "bg-black text-white" : "bg-white"
-              }`}
-            >
-              {h} GW
-            </button>
-          ))}
-        </div>
+        <Segmented
+          label="Gameweeks to optimise for"
+          value={horizon}
+          onChange={(v) => setHorizon(v)}
+          options={[
+            { value: 1, label: "1 GW" },
+            { value: 3, label: "3 GWs" },
+            { value: 5, label: "5 GWs" },
+          ]}
+        />
       }
     >
       {loading || !data ? (
-        <Card>
-          <div className="p-6 text-sm">Building optimal team…</div>
-        </Card>
+        <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
+          <div className="skeleton h-[560px]" />
+          <div className="skeleton h-56" />
+        </div>
       ) : (
-        <div className="grid gap-5">
-          {/* Summary */}
-          <Card>
-            <div className="p-5 flex flex-wrap gap-4 text-sm">
-              <div>
-                <div className="text-xs text-gray-500">Projected Points</div>
-                <div className="font-semibold">{data.horizonScore}</div>
-              </div>
-              <div>
-                <div className="text-xs text-gray-500">Captain</div>
-                <div className="font-semibold">
-                  {data.captain?.name ?? "—"}
+        <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
+          <Card className="overflow-hidden">
+            <Pitch
+              squad={[...(Array.isArray(data.xi) ? data.xi : []), ...(Array.isArray(data.bench) ? data.bench : [])]}
+              captainId={data.captain?.id ?? null}
+              showLegend={false}
+            />
+          </Card>
+
+          <div className="grid content-start gap-4">
+            <Card>
+              <div className="grid grid-cols-2 gap-3 p-5">
+                <div className="col-span-2">
+                  <div className="text-xs font-medium text-ink-2">Projected points, next {horizon} GW{horizon > 1 ? "s" : ""}</div>
+                  <div className="tabular font-display text-4xl font-bold text-pitch">{data.horizonScore}</div>
+                </div>
+                <div>
+                  <div className="text-xs font-medium text-ink-2">Captain</div>
+                  <div className="font-semibold">{data.captain?.name ?? "–"}</div>
+                </div>
+                <div>
+                  <div className="text-xs font-medium text-ink-2">Left in the bank</div>
+                  <div className="tabular font-semibold">£{data.itb}m</div>
                 </div>
               </div>
-              <div>
-                <div className="text-xs text-gray-500">ITB</div>
-                <div className="font-semibold">£{data.itb}m</div>
+            </Card>
+            <Card>
+              <div className="p-5 text-sm text-ink-2">
+                Built by a simple search for high projected points within the £100m budget and the
+                three-per-club rule, using only players with at least a 75% chance of playing. Tap a
+                player to see their fixtures.
               </div>
-            </div>
-          </Card>
-
-          {/* XI */}
-          <Card>
-            <div className="p-5">
-              <div className="text-sm font-semibold mb-3">Best XI</div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {(Array.isArray(data.xi) ? data.xi : []).map((p: any) => (
-                  <PlayerCard key={p.id} p={p} />
-                ))}
-              </div>
-            </div>
-          </Card>
-
-          {/* Bench */}
-          <Card>
-            <div className="p-5">
-              <div className="text-sm font-semibold mb-3">Bench</div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {(Array.isArray(data.bench) ? data.bench : []).map((p: any) => (
-                  <PlayerCard key={p.id} p={p} />
-                ))}
-              </div>
-            </div>
-          </Card>
+            </Card>
+          </div>
         </div>
       )}
     </AppShell>

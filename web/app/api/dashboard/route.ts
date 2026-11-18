@@ -91,8 +91,29 @@ function riskTag(p: any) {
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const entry = searchParams.get("entry");
-  if (!entry) return NextResponse.json({ error: "Missing entry" }, { status: 400 });
+  const entry = (searchParams.get("entry") ?? "").trim();
+  if (!entry) return NextResponse.json({ error: "Enter your team ID." }, { status: 400 });
+  if (!/^\d{1,9}$/.test(entry)) {
+    return NextResponse.json({ error: "A team ID is a number, for example 28935." }, { status: 400 });
+  }
+  try {
+    return await buildDashboard(entry);
+  } catch (e: any) {
+    const msg = String(e?.message ?? e);
+    if (msg.includes("404") || msg.startsWith("No team found")) {
+      return NextResponse.json(
+        { error: `No team found for ID ${entry}, or it has no picks yet this season.` },
+        { status: 404 }
+      );
+    }
+    return NextResponse.json(
+      { error: "The FPL website did not answer. It may be updating between gameweeks; try again in a few minutes." },
+      { status: 502 }
+    );
+  }
+}
+
+async function buildDashboard(entry: string) {
 
   const [bootstrap, fixtures, entryInfo] = await Promise.all([
     fetchJson("/bootstrap-static/"),
@@ -174,6 +195,10 @@ export async function GET(req: Request) {
     transfersAvailable: 1,
     captain: captainPick ? captainPick.element : null,
     viceCaptain: vicePick ? vicePick.element : null,
+    teamName: String(entryInfo.name ?? ""),
+    manager: [entryInfo.player_first_name, entryInfo.player_last_name].filter(Boolean).join(" "),
+    overallPoints: Number(entryInfo.summary_overall_points ?? 0),
+    gwPoints: Number(entryInfo.summary_event_points ?? 0),
   };
 
   return NextResponse.json({

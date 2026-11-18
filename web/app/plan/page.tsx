@@ -60,23 +60,30 @@ export default function PlanPage() {
 
   const [openPlan, setOpenPlan] = useState<number>(0);
 
+  // open with the team that was used last, and plan straight away
   useEffect(() => {
     const saved = localStorage.getItem("fpl_entry");
-    if (saved && !entry) setEntry(saved);
-  }, [entry]);
+    if (saved) {
+      setEntry(saved);
+      load(saved);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  async function load() {
+  async function load(id?: string) {
+    const value = (id ?? entry).trim();
+    if (!value) return;
     setLoading(true);
     setErr(null);
     setData(null);
 
     try {
-      const res = await fetch(`/api/plan?entry=${encodeURIComponent(entry.trim())}&horizon=${horizon}`);
+      const res = await fetch(`/api/plan?entry=${encodeURIComponent(value)}&horizon=${horizon}`);
       const text = await res.text();
       if (!res.ok) throw new Error(text.slice(0, 220));
       const json = JSON.parse(text);
       setData(json);
-      localStorage.setItem("fpl_entry", entry.trim());
+      localStorage.setItem("fpl_entry", value);
     } catch (e: any) {
       setErr(e?.message ?? "Unknown error");
     } finally {
@@ -90,24 +97,24 @@ export default function PlanPage() {
   return (
     <AppShell
       title="Planner"
-      subtitle="Real plans: roll vs transfer vs -4. Optimized by Best XI + Captain over your horizon."
+      subtitle="Roll your transfer, make one, or take a -4 hit: each plan is scored by your best XI and captain over the next gameweeks."
       right={
-        <div className="rounded-2xl border border-gray-200 bg-white p-3 shadow-sm">
+        <div className="rounded-2xl border border-line bg-white p-3 shadow-sm">
           <div className="flex flex-wrap items-end gap-2">
             <div className="min-w-[220px]">
-              <div className="text-[11px] font-medium text-gray-600">Entry ID</div>
+              <div className="text-[11px] font-medium text-ink-2">Team ID</div>
               <input
                 value={entry}
                 onChange={(e) => setEntry(e.target.value)}
                 placeholder="e.g. 28935"
-                className="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 text-sm outline-none focus:ring"
+                className="mt-1 w-full rounded-xl border border-line px-3 py-2 text-sm outline-none transition focus:border-pitch focus:ring-4 focus:ring-pitch/15"
               />
             </div>
 
             <div className="w-[140px]">
-              <div className="text-[11px] font-medium text-gray-600">Horizon</div>
+              <div className="text-[11px] font-medium text-ink-2">Horizon</div>
               <select
-                className="mt-1 w-full rounded-xl border border-gray-300 px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-xl border border-line px-3 py-2 text-sm"
                 value={horizon}
                 onChange={(e) => setHorizon(Number(e.target.value) as any)}
               >
@@ -117,11 +124,11 @@ export default function PlanPage() {
             </div>
 
             <button
-              onClick={load}
+              onClick={() => load()}
               disabled={!entry.trim() || loading}
-              className="rounded-xl bg-black px-4 py-2 text-sm text-white disabled:opacity-50"
+              className="rounded-xl bg-pitch px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-pitch-dark disabled:opacity-50"
             >
-              {loading ? "Planning..." : "Generate"}
+              {loading ? "Planning…" : "Make plans"}
             </button>
           </div>
 
@@ -132,12 +139,12 @@ export default function PlanPage() {
           )}
 
           {data && (
-            <div className="mt-3 flex flex-wrap gap-2 text-xs text-gray-700">
-              <span className="rounded-full border bg-gray-50 px-2 py-0.5">GW {data.currentEvent}</span>
-              <span className="rounded-full border bg-gray-50 px-2 py-0.5">
+            <div className="mt-3 flex flex-wrap gap-2 text-xs text-ink-2">
+              <span className="rounded-full border bg-paper px-2 py-0.5">GW {data.currentEvent}</span>
+              <span className="rounded-full border bg-paper px-2 py-0.5">
                 Bank £{(data.bank / 10).toFixed(1)}m
               </span>
-              <span className="rounded-full border bg-gray-50 px-2 py-0.5">
+              <span className="rounded-full border bg-paper px-2 py-0.5">
                 Baseline {data.baseline}
               </span>
             </div>
@@ -150,9 +157,9 @@ export default function PlanPage() {
           <div className="flex flex-col gap-1">
             <div className="flex flex-wrap items-center gap-2">
               <RecBadge rec={data.recommendation} />
-              <span className="text-sm font-semibold text-gray-900">{data.reason}</span>
+              <span className="text-sm font-semibold text-ink">{data.reason}</span>
             </div>
-            <div className="text-xs text-gray-500">{data.modelNote}</div>
+            <div className="text-xs text-ink-2">{data.modelNote}</div>
           </div>
         </div>
       )}
@@ -169,7 +176,7 @@ export default function PlanPage() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="text-sm font-semibold">{p.label}</div>
-                    <div className="mt-1 text-xs text-gray-600">
+                    <div className="mt-1 text-xs text-ink-2">
                       Hits: {p.hits === 0 ? "0" : `-${p.hits}`} • Net gain:{" "}
                       <span className="font-semibold">
                         {p.netGain > 0 ? `+${p.netGain}` : p.netGain}
@@ -181,8 +188,8 @@ export default function PlanPage() {
                     className={[
                       "rounded-full border px-2 py-0.5 text-xs font-semibold",
                       idx === openPlan
-                        ? "bg-black text-white border-black"
-                        : "bg-gray-50 text-gray-700 border-gray-200",
+                        ? "bg-ink text-white border-ink"
+                        : "bg-paper text-ink-2 border-line",
                     ].join(" ")}
                   >
                     {idx === openPlan ? "Viewing" : "View"}
@@ -191,17 +198,17 @@ export default function PlanPage() {
 
                 <div className="mt-4 space-y-2">
                   {p.transfers.length === 0 ? (
-                    <div className="rounded-xl border bg-gray-50 p-3 text-sm text-gray-700">
+                    <div className="rounded-xl border bg-paper p-3 text-sm text-ink-2">
                       Roll transfer
                     </div>
                   ) : (
                     p.transfers.map((t, i) => (
                       <div key={i} className="rounded-xl border bg-white p-3">
-                        <div className="text-xs text-gray-500">Transfer {i + 1}</div>
+                        <div className="text-xs text-ink-2">Transfer {i + 1}</div>
                         <div className="mt-1 text-sm font-semibold">
                           {t.out.name} → {t.in.name}
                         </div>
-                        <div className="mt-1 text-xs text-gray-600">
+                        <div className="mt-1 text-xs text-ink-2">
                           {posLabel(t.out.pos)} • {money(t.out.cost)} → {money(t.in.cost)}
                         </div>
                       </div>
@@ -209,9 +216,9 @@ export default function PlanPage() {
                   )}
                 </div>
 
-                <div className="mt-4 rounded-xl border bg-gray-50 p-3">
-                  <div className="text-xs font-semibold text-gray-700">Why</div>
-                  <ul className="mt-2 space-y-1 text-xs text-gray-600 list-disc pl-4">
+                <div className="mt-4 rounded-xl border bg-paper p-3">
+                  <div className="text-xs font-semibold text-ink-2">Why</div>
+                  <ul className="mt-2 space-y-1 text-xs text-ink-2 list-disc pl-4">
                     {p.why.slice(0, 3).map((w, i) => (
                       <li key={i}>{w}</li>
                     ))}
@@ -229,12 +236,12 @@ export default function PlanPage() {
               <div className="flex items-baseline justify-between gap-2">
                 <div>
                   <div className="text-sm font-semibold">GW-by-GW Projection</div>
-                  <div className="mt-1 text-xs text-gray-500">
+                  <div className="mt-1 text-xs text-ink-2">
                     Best XI + Captain each GW (bench shown separately)
                   </div>
                 </div>
                 {active && (
-                  <div className="text-xs text-gray-700">
+                  <div className="text-xs text-ink-2">
                     Total (horizon):{" "}
                     <span className="font-semibold">
                       {active.byGW.reduce((s, g) => s + g.total, 0).toFixed(1)}
@@ -245,7 +252,7 @@ export default function PlanPage() {
 
               <div className="mt-4 overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="bg-gray-50 text-xs text-gray-600">
+                  <thead className="bg-paper text-xs text-ink-2">
                     <tr className="text-left">
                       <th className="px-4 py-3">GW</th>
                       <th className="px-4 py-3">Captain</th>
@@ -257,14 +264,14 @@ export default function PlanPage() {
                   <tbody className="divide-y">
                     {!active && (
                       <tr>
-                        <td colSpan={5} className="px-4 py-4 text-gray-600">
+                        <td colSpan={5} className="px-4 py-4 text-ink-2">
                           Choose a plan to view projections.
                         </td>
                       </tr>
                     )}
 
                     {active?.byGW.map((g) => (
-                      <tr key={g.gw} className="hover:bg-gray-50">
+                      <tr key={g.gw} className="hover:bg-turf">
                         <td className="px-4 py-3 font-semibold">GW {g.gw}</td>
                         <td className="px-4 py-3">
                           {g.captain ? (
@@ -287,14 +294,14 @@ export default function PlanPage() {
           <Card>
             <div className="p-5">
               <div className="text-sm font-semibold">Best XI (next GW)</div>
-              <div className="mt-1 text-xs text-gray-500">
+              <div className="mt-1 text-xs text-ink-2">
                 Snapshot of the first GW in your horizon for the selected plan.
               </div>
 
               {active?.byGW?.[0] ? (
                 <div className="mt-4 grid gap-4 lg:grid-cols-2">
                   <div>
-                    <div className="text-xs font-semibold text-gray-700">Starting XI</div>
+                    <div className="text-xs font-semibold text-ink-2">Starting XI</div>
                     <div className="mt-2 space-y-2">
                       {active.byGW[0].xi.map((p) => (
                         <div key={p.id} className="flex items-center justify-between rounded-xl border p-3">
@@ -302,10 +309,10 @@ export default function PlanPage() {
                             <div className="font-medium truncate">
                               {p.name}{" "}
                               {active.byGW[0].captain?.id === p.id ? (
-                                <span className="ml-2 rounded-full bg-black px-2 py-0.5 text-[10px] text-white">C</span>
+                                <span className="ml-2 rounded-full bg-ink px-2 py-0.5 text-[10px] text-white">C</span>
                               ) : null}
                             </div>
-                            <div className="mt-1 text-xs text-gray-600">
+                            <div className="mt-1 text-xs text-ink-2">
                               {p.team} • {posLabel(p.pos)} • {p.fixture ? `${p.fixture.ha} ${p.fixture.opp} (D${p.fixture.difficulty})` : "No fixture"}
                             </div>
                           </div>
@@ -316,13 +323,13 @@ export default function PlanPage() {
                   </div>
 
                   <div>
-                    <div className="text-xs font-semibold text-gray-700">Bench (top 3)</div>
+                    <div className="text-xs font-semibold text-ink-2">Bench (top 3)</div>
                     <div className="mt-2 space-y-2">
                       {active.byGW[0].bench.map((p) => (
                         <div key={p.id} className="flex items-center justify-between rounded-xl border p-3">
                           <div className="min-w-0">
                             <div className="font-medium truncate">{p.name}</div>
-                            <div className="mt-1 text-xs text-gray-600">
+                            <div className="mt-1 text-xs text-ink-2">
                               {p.team} • {posLabel(p.pos)} • {p.fixture ? `${p.fixture.ha} ${p.fixture.opp} (D${p.fixture.difficulty})` : "No fixture"}
                             </div>
                           </div>
@@ -331,13 +338,13 @@ export default function PlanPage() {
                       ))}
                     </div>
 
-                    <div className="mt-4 rounded-xl border bg-gray-50 p-4 text-xs text-gray-600">
+                    <div className="mt-4 rounded-xl border bg-paper p-4 text-xs text-ink-2">
                       Next upgrade: bench order + autosub simulation (production feature).
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="mt-4 text-sm text-gray-600">Generate plans to see the XI.</div>
+                <div className="mt-4 text-sm text-ink-2">Generate plans to see the XI.</div>
               )}
             </div>
           </Card>

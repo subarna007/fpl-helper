@@ -38,56 +38,56 @@ export default function Widgets({
       <Card>
         <div className="p-5">
           <div className="flex items-baseline justify-between">
-            <div className="text-sm font-semibold">Captaincy</div>
-            <div className="text-xs text-gray-500">GW {currentEvent || "—"}</div>
+            <div className="font-display text-lg font-bold">Captain picks</div>
+            <div className="text-xs text-ink-2">GW {currentEvent || "—"}</div>
           </div>
 
-          <div className="mt-2 text-xs text-gray-600">
-            Top captain options from your squad based on xPts.
+          <div className="mt-2 text-xs text-ink-2">
+            The three players in your squad with the highest expected points (xPts) this gameweek.
           </div>
 
           <div className="mt-4 space-y-2">
             {list.length === 0 ? (
-              <div className="rounded-xl border bg-gray-50 p-3 text-sm text-gray-700">
-                Load your team to see captain suggestions.
+              <div className="rounded-xl border bg-paper p-3 text-sm text-ink-2">
+                Load your team to see captain picks.
               </div>
             ) : (
               list.map((c, i) => (
                 <div
                   key={c.id ?? i}
-                  className="rounded-xl border border-gray-200 bg-white p-3 flex items-center justify-between"
+                  className="rounded-xl border border-line bg-white p-3 flex items-center justify-between"
                 >
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-gray-500">#{i + 1}</span>
+                      <span className="text-xs font-semibold text-ink-2">#{i + 1}</span>
                       <span className="text-sm font-semibold truncate">{c.name}</span>
                       {c.teamShort ? (
-                        <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] text-gray-700">
+                        <span className="rounded-full bg-paper px-2 py-0.5 text-[11px] text-ink-2">
                           {c.teamShort}
                         </span>
                       ) : null}
                     </div>
 
-                    <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-gray-600">
+                    <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-ink-2">
                       {c.fixture ? (
                         <>
-                          <span className="rounded-full bg-gray-100 px-2 py-0.5">
+                          <span className="rounded-full bg-paper px-2 py-0.5">
                             {c.fixture.isHome ? "H" : "A"} {c.fixture.oppShort}
                           </span>
                           <DiffPill d={c.fixture.difficulty} />
                         </>
                       ) : (
-                        <span className="rounded-full bg-gray-100 px-2 py-0.5">No fixture</span>
+                        <span className="rounded-full bg-paper px-2 py-0.5">No fixture</span>
                       )}
 
                       {typeof c.ownership === "number" ? (
-                        <span className="rounded-full bg-gray-100 px-2 py-0.5">
+                        <span className="rounded-full bg-paper px-2 py-0.5">
                           EO {c.ownership.toFixed(1)}%
                         </span>
                       ) : null}
 
                       {c.risk ? (
-                        <span className="rounded-full bg-gray-100 px-2 py-0.5">
+                        <span className="rounded-full bg-paper px-2 py-0.5">
                           {c.risk}
                         </span>
                       ) : null}
@@ -95,7 +95,7 @@ export default function Widgets({
                   </div>
 
                   <div className="text-right">
-                    <div className="text-xs text-gray-500">xPts</div>
+                    <div className="text-xs text-ink-2">xPts</div>
                     <div className="text-sm font-bold">
                       {typeof c.xPts === "number" ? c.xPts.toFixed(2) : "—"}
                     </div>

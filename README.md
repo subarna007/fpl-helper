@@ -1,78 +1,40 @@
-# ⚽ FPL Analytics Dashboard
+# FPL Helper
 
-A modern **Fantasy Premier League (FPL) analytics web app** built with **Next.js App Router**.  
-It helps FPL managers analyze their squad, fixtures, and player performance using a clean, professional dashboard inspired by tools like Fantasy Football Hub and Fantasy Football Scout.
+A web app for Fantasy Premier League managers. Enter your team ID and it shows your squad on a pitch,
+the best captain options for this gameweek, and which transfers are worth making over the next few
+gameweeks. It reads live data from the official FPL API, so it follows the current season.
 
----
+**Live site: [fpl-helper-seven.vercel.app](https://fpl-helper-seven.vercel.app/)**
 
-## 📸 Screenshot
+## What it does
 
+| Page | What you get |
+|---|---|
+| My team | Your starting XI and bench on a pitch, next opponent coloured by difficulty, captain and injury flags, rank, points, team value and bank, and the three best captain options |
+| Planner | Plans for rolling your transfer, making one, or taking a -4 hit, each scored by your best XI and captain over the next 3 or 5 gameweeks |
+| Transfers | Upgrades ranked by projected gain, with the reasons (fixtures, minutes, ownership) |
+| Best squad | A high-scoring 15 within £100m and three players per club |
+| Players | Search every player by name or club, filter by position, and open a page with their stats and next five fixtures |
 
-![FPL Dashboard Screenshot](1.png)
-![FPL Dashboard Screenshot](2.png)
+The team ID is remembered in the browser, so you enter it once and every page uses it. On phones the
+pages are in a tab bar at the bottom of the screen.
 
+## Built with
 
-## 🚀 Features
-
-- 🔐 **Enter FPL Entry ID once** – works across the entire app
-- 🏟️ **Pitch-based squad view**
-  - Proper Starting XI & Bench
-  - Position-aware layout
-  - Click players for detailed stats
-- 🧩 **Player cards**
-  - Price, form, ownership
-  - xPoints (Next GW & 5 GWs)
-  - Upcoming fixture & difficulty
-- 📊 **Analytics widgets**
-  - Quick insights for the current gameweek
-- 🧠 **Expandable architecture**
-  - Built to support transfer, captaincy and team-selection decisions
-
----
-
-## 🛠️ Tech Stack
-
-- **Next.js** (App Router)
-- **TypeScript**
-- **React**
-- **Tailwind CSS**
-- **FPL Official APIs (proxied)**
-
----
-
-## 🧭 How It Works
-
-1. Enter your **FPL Entry ID**
-2. App fetches:
-   - Squad
-   - Fixtures
-   - Player stats
-3. Data is stored globally → available everywhere
-4. Dashboard renders:
-   - Squad pitch
-   - Widgets
-   - Player drawer with deep stats
-
----
-
-## 🏗️ Project Structure (Simplified)
+Next.js (App Router), React, TypeScript and Tailwind CSS. The app's own API routes call the public FPL
+API (`https://fantasy.premierleague.com/api`) on the server, which avoids browser CORS errors, so no API
+key is needed.
 
 ```text
-app/
- ├─ api/              # FPL API routes
- ├─ _components/      # UI components (Pitch, PlayerTile, Widgets)
- ├─ _state/           # Global dashboard context
- ├─ layout.tsx
- └─ page.tsx
+web/app/
+  api/            server routes that read the FPL API and compute projections
+  _components/    app shell, pitch, cards and icons
+  _state/         the team being viewed, shared by all pages
+  page.tsx        team ID entry and the squad view
+  plan/ transfers/ best-squad/ players/ player/[id]/
+```
 
----
-
-## 🌐 Live site
-
-**[fpl-helper-seven.vercel.app](https://fpl-helper-seven.vercel.app/)**, deployed on Vercel.
-To deploy your own copy: import this repository on [vercel.com](https://vercel.com), set **Root Directory** to `web`, and deploy. No environment variables are needed.
-
-## ▶️ Run locally
+## Run it yourself
 
 Requires Node.js 20 or newer.
 
@@ -82,13 +44,15 @@ npm install
 npm run dev      # http://localhost:3000
 ```
 
-No API key is needed: the app's own API routes call the public FPL API
-(`https://fantasy.premierleague.com/api`) on the server, which avoids browser CORS errors.
+To deploy your own copy, import this repository on [vercel.com](https://vercel.com), set **Root
+Directory** to `web`, and deploy. No environment variables are needed.
 
-## 📐 About the xPoints numbers
+## About the expected points
 
-The expected-points figures are a hand-made heuristic, not a trained model. A player's FPL
-form and expected goal involvements are combined, then scaled by fixture difficulty, position,
-minutes played and availability (injury or doubt flags); see `web/app/api/_lib/projection.ts`.
-The recommendations route also uses bookmaker match odds from football-data.co.uk (`odds.ts`).
-Treat the numbers as a ranking aid.
+The expected-points figures are a hand-made heuristic, not a trained model. A player's FPL form and
+expected goal involvements are combined, then scaled by fixture difficulty, position, minutes played
+and availability (injury or doubt flags); see `web/app/api/_lib/projection.ts`. The recommendations
+route also uses bookmaker match odds from football-data.co.uk (`odds.ts`). Treat the numbers as a
+ranking aid, not a prediction.
+
+This is an unofficial tool and is not affiliated with the Premier League.
