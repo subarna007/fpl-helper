@@ -69,7 +69,7 @@ app/
 
 ## 🌐 Live site
 
-Deployed on Vercel (see the link on [my website](https://subarna007.github.io/personalwebsite/#fpl)).
+**[fpl-helper-seven.vercel.app](https://fpl-helper-seven.vercel.app/)**, deployed on Vercel.
 To deploy your own copy: import this repository on [vercel.com](https://vercel.com), set **Root Directory** to `web`, and deploy. No environment variables are needed.
 
 ## ▶️ Run locally
